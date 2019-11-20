@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <title>Document</title>
+    <style>
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="form-add" style="text-align: center;">
+            <br><br>
+            <h2>Form</h2>
+            <div class="form-group">
+                <input type="text" placeholder="nhập tên" name="name" id="name" class="form-control">
+                <p id="error" style="color:red;"></p>
+            </div><br>
+            <div class="form-group">
+                <input type="text" placeholder="nhập điểm jsscore" name="jsscore" id="jsscore" class="form-control">
+                <p id="error2" style="color:red;"></p>
+            </div><br>
+            <div class="form-group">
+                <input type="text" placeholder="nhập điểm androidscore" name="androidscore" id="androidscore" class="form-control">
+                <p id="error3" style="color:red;"></p>
+            </div><br>
+            <div class="row">
+                <button id="add" onclick="addstudent()" class="btn btn-primary">AddStudent</button>
+                <button id="update" style="text-align: center;" onclick="Update()" class="btn btn-primary" >Update</button>
+            </div>
+
+        </div>
+        <br><br>
+        <div>
+            <table class="table table-bordered">
+                <tr>
+                    <th>Name</th>
+                    <th>jsscore</th>
+                    <th>androidscore</th>
+                    <th>AverageScore</th>
+                    <th>Result</th>
+                    <th>Manipulation</th>
+                </tr>
+                <tbody id="kp">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        var students = [{
+            name: 'nguyen',
+            jsscore: 7,
+            androidscore: 8
+        },
+        {
+            name: 'vy',
+            jsscore: 9,
+            androidscore: 8
+        }];
+
+        localStorage.setItem('students', JSON.stringify(students));
+        var students = JSON.parse(localStorage.getItem('students'));
+        display();
+
+        function display() {
+            document.getElementById("kp").innerHTML = " ";
+            for (i = 0; i < students.length; i++) {
+                document.getElementById('update').style.display = 'none';
+                var dtb = (parseFloat(students[i].jsscore) + parseFloat(students[i].androidscore)) / 2;
+                var result = "";
+                var color = "";
+                if (dtb > 8) {
+                    result = "Very Good";
+                    color = "#ffe699";
+                } else if (dtb > 7) {
+                    result = "Good";
+                    color = "#1a1300";
+                } else {
+                    result = "Normal";
+                    color = "#333300";
+                }
+                document.getElementById("kp").innerHTML += "<tr>" +
+                    "<td>" + students[i].name + "</td>" +
+                    "<td>" + students[i].jsscore + "</td>"
+                    + "<td>" + students[i].androidscore + "</td>"
+                    + "<td>" + dtb + "</td>"
+                    + "<td style='color: " + color + "'>" + result + "</td>"
+                    + "<td><button onclick='Deletestudent(" + i + ")' class='btn btn-primary'>Delete  </button> "+
+                    " <button id='myedit' onclick='myEdit(" + i + ")' class='btn btn-primary'>Edit</button></td></tr>";
+            }
+        }
+        function addstudent() {
+            var name = document.getElementById('name').value;
+            var jsscore = document.getElementById('jsscore').value;
+            var androidscore = document.getElementById('androidscore').value;
+            var jsscore = parseFloat(jsscore);
+            var androidscore = parseFloat(androidscore);
+            if (name === "") {
+                document.getElementById("error").innerHTML = "* Name is empty";
+            } else if (jsscore > 10 || jsscore < 0) {
+                document.getElementById("error2").innerHTML = "* Invalid score";
+            } else if (androidscore > 10 || androidscore < 0) {
+                document.getElementById("error3").innerHTML = "* Invalid score";
+            }
+            else {
+                var name = document.getElementById('name').value;
+                var jsscore = document.getElementById('jsscore').value;
+                var androidscore = document.getElementById('androidscore').value;
+                var jsscore = parseFloat(jsscore);
+                var androidscore = parseFloat(androidscore);
+                console.log(jsscore, androidscore);
+                students = JSON.parse(localStorage.getItem('students'));
+                students.push({
+                    name,
+                    jsscore,
+                    androidscore
+                })
+                localStorage.setItem('students', JSON.stringify(students));
+                students = JSON.parse(localStorage.getItem('students'));
+                display();
+            }
+        }
+        function Deletestudent(i) {
+            students.splice(i, 1);
+            localStorage.setItem('students', JSON.stringify(students));
+            students = JSON.parse(localStorage.getItem('students'));
+            display();
+        }
+
+        function myEdit(i) {
+           var name = document.getElementById('name').value =students[i].name;
+           var jsscore = document.getElementById('jsscore').value =students[i].jsscore;
+           var androidscore = document.getElementById('androidscore').value =students[i].androidscore;  
+               document.getElementById('add').style.display = 'none';
+               document.getElementById('update').style.display = 'block';
+               document.getElementById('update').setAttribute("onclick", "update("+ i +")");
+
+        }
+        function update(i) {   
+            var name = document.getElementById('name').value;
+            var jsscore = document.getElementById('jsscore').value;
+            var androidscore = document.getElementById('androidscore').value;
+            var jsscore = parseFloat(jsscore);
+            var androidscore = parseFloat(androidscore);
+            students[i].name =name;
+            students[i].jsscore = jsscore;
+            students[i].androidscore = androidscore;
+            localStorage.setItem('students', JSON.stringify(students));
+            students = JSON.parse(localStorage.getItem('students'));
+
+            document.getElementById("name").value= " ";
+            document.getElementById("jsscore").value=" ";
+            document.getElementById("androidscore").value=" ";
+            document.getElementById('add').style.display = 'block';
+            display();
+        }
+
+
+
+
+    </script>
+
+
+</body>
+
+</html>
